@@ -27,7 +27,11 @@ export default class Simulation {
   initialize() {
     this.entities = [];
     this.winner = null;
+    
+    // Ensure the winner overlay is hidden
     this.settings.winnerOverlay.classList.remove("show");
+    this.settings.winnerOverlay.style.opacity = "0";
+    this.settings.winnerOverlay.classList.add("pointer-events-none");
 
     const rockCount = parseInt(this.settings.rockCount.value) || 0;
     const paperCount = parseInt(this.settings.paperCount.value) || 0;
@@ -157,6 +161,8 @@ export default class Simulation {
       this.settings.winnerEmoji.textContent = ["🪨", "📄", "✂️"][this.winner];
       this.settings.winnerText.textContent = ["Rock", "Paper", "Scissors"][this.winner] + " Wins!";
       this.settings.winnerOverlay.classList.add("show");
+      this.settings.winnerOverlay.style.opacity = "1";
+      this.settings.winnerOverlay.classList.remove("pointer-events-none");
       this.pause();
     }
   }

@@ -34,6 +34,8 @@ document.getElementById("startBtn").addEventListener("click", () => {
   // Check if a winner was declared or settings were changed
   if (simulation.winner !== null || simulation.needsReset) {
     simulation.reset();
+    // Force a full initialization to properly clear the winner state
+    simulation.initialize();
   }
   
   simulation.start();
