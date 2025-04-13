@@ -56,7 +56,6 @@ export const TYPES = {
       const width = canvasDimensions.width;
       const height = canvasDimensions.height;
   
-      // Determine target and avoidance types
       let targetType, avoidType;
       switch (this.type) {
         case TYPES.ROCK:
@@ -73,7 +72,6 @@ export const TYPES = {
           break;
       }
   
-      // Re-evaluate target every 2000 ms or when current target is invalid.
       if (timestamp - this.targetTime > 2000 ||
           !this.targetEntity ||
           this.targetEntity.type !== targetType) {
@@ -94,14 +92,12 @@ export const TYPES = {
   
       let forceX = 0, forceY = 0;
   
-      // Compute forces from local interactions (avoidance/collisions)
       for (const other of entities) {
         if (other === this) continue;
         const dx = other.x - this.x;
         const dy = other.y - this.y;
         const distance = Math.hypot(dx, dy);
   
-        // Collision/conversion detection
         if (distance < this.hitRadius + other.hitRadius) {
           if ((this.type === TYPES.ROCK && other.type === TYPES.SCISSORS) ||
               (this.type === TYPES.PAPER && other.type === TYPES.ROCK) ||
@@ -113,7 +109,6 @@ export const TYPES = {
           continue;
         }
   
-        // Apply avoidance force for predator type
         if (other.type === avoidType) {
           const avoidStrength = avoidanceFactor / Math.max(0.1, distance * 0.1);
           forceX -= (dx / distance) * avoidStrength;
@@ -121,10 +116,7 @@ export const TYPES = {
         }
       }
   
-      // Check movement mode from settings
       if (settings.movementMode.value === "randomBias") {
-        // New random-based movement: add a bigger random factor,
-        // but with a slight bias if a target exists.
         forceX = (Math.random() - 0.5) * 0.2;
         forceY = (Math.random() - 0.5) * 0.2;
         if (this.targetEntity) {
@@ -138,7 +130,6 @@ export const TYPES = {
           }
         }
       } else {
-        // Default behavior:
         if (this.targetEntity) {
           const dx = this.targetEntity.x - this.x;
           const dy = this.targetEntity.y - this.y;
@@ -149,13 +140,11 @@ export const TYPES = {
             forceY += (dy / distance) * attractStrength;
           }
         } else {
-          // Wandering when no target.
           forceX += (Math.random() - 0.5) * 0.05;
           forceY += (Math.random() - 0.5) * 0.05;
         }
       }
   
-      // Update velocity with computed forces.
       this.vx += forceX;
       this.vy += forceY;
       const speed = Math.hypot(this.vx, this.vy);
@@ -163,11 +152,9 @@ export const TYPES = {
         this.vx = (this.vx / speed) * 2;
         this.vy = (this.vy / speed) * 2;
       }
-      // Small jitter to break stalemates.
       this.vx += (Math.random() - 0.5) * 0.01;
       this.vy += (Math.random() - 0.5) * 0.01;
   
-      // Update position and check canvas boundaries.
       this.x += this.vx * speedFactor;
       this.y += this.vy * speedFactor;
       if (this.x < this.hitRadius) {

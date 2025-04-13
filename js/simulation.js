@@ -2,7 +2,7 @@ import { Entity, TYPES } from "./entity.js";
 
 export default class Simulation {
   constructor(settings) {
-    this.settings = settings; // Contains DOM elements and other settings
+    this.settings = settings;
     this.canvas = settings.canvas;
     this.ctx = this.canvas.getContext("2d");
     this.canvasDimensions = { width: this.canvas.width, height: this.canvas.height };
@@ -14,7 +14,6 @@ export default class Simulation {
     this.lastTime = 0;
   }
 
-  // Helper function to check non-overlap
   isOverlapping(x, y, newEntityRadius, entities, minDistance) {
     for (const e of entities) {
       const dx = e.x - x;
@@ -33,17 +32,14 @@ export default class Simulation {
     const paperCount = parseInt(this.settings.paperCount.value) || 0;
     const scissorsCount = parseInt(this.settings.scissorsCount.value) || 0;
     
-    const spawnMode = this.settings.spawnMode.value; // "corners" or "random"
+    const spawnMode = this.settings.spawnMode.value;
 
     const canvasW = this.canvasDimensions.width;
     const canvasH = this.canvasDimensions.height;
 
-    // For random mode, we want to avoid overlapping entities.
-    // We assume each entity has a hitRadius of 12. Use a buffer of around 30 pixels.
     const minDistance = 30;
 
     if (spawnMode === "corners") {
-      // Position rocks in the top-left corner
       for (let i = 0; i < rockCount; i++) {
         this.entities.push(new Entity(
           TYPES.ROCK,
@@ -51,7 +47,6 @@ export default class Simulation {
           Math.random() * canvasH * 0.25
         ));
       }
-      // Position papers in the top-right corner
       for (let i = 0; i < paperCount; i++) {
         this.entities.push(new Entity(
           TYPES.PAPER,
@@ -59,7 +54,6 @@ export default class Simulation {
           Math.random() * canvasH * 0.25
         ));
       }
-      // Position scissors in the bottom-left corner
       for (let i = 0; i < scissorsCount; i++) {
         this.entities.push(new Entity(
           TYPES.SCISSORS,
@@ -68,17 +62,14 @@ export default class Simulation {
         ));
       }
     } else if (spawnMode === "random") {
-      // For each type, spawn them randomly in the canvas without overlapping.
       const spawnEntity = (type, count) => {
         for (let i = 0; i < count; i++) {
           let placed = false;
           let attempts = 0;
           while (!placed && attempts < 100) {
-            // Generate a random x,y ensuring the entity stays within the canvas boundaries.
-            const x = 12 + Math.random() * (canvasW - 24); // 12 is the hitRadius; adjust margins accordingly
+            const x = 12 + Math.random() * (canvasW - 24);
             const y = 12 + Math.random() * (canvasH - 24);
 
-            // Check overlap with previously placed entities
             if (!this.isOverlapping(x, y, 12, this.entities, minDistance)) {
               this.entities.push(new Entity(type, x, y));
               placed = true;
@@ -86,7 +77,6 @@ export default class Simulation {
             attempts++;
           }
           if (!placed) {
-            // In case a valid position wasn't found after many attempts, simply place it.
             this.entities.push(new Entity(type, Math.random() * canvasW, Math.random() * canvasH));
           }
         }
@@ -98,6 +88,14 @@ export default class Simulation {
     }
 
     this.updateStats();
+    this.updateDebugMode();
+  }
+
+  updateDebugMode() {
+    const debugEnabled = this.settings.debugMode.checked;
+    for (const entity of this.entities) {
+      entity.debug = debugEnabled;
+    }
   }
 
   animate(timestamp) {
@@ -106,10 +104,10 @@ export default class Simulation {
     const deltaTime = timestamp - this.lastTime;
     this.lastTime = timestamp;
     this.ctx.clearRect(0, 0, this.canvasDimensions.width, this.canvasDimensions.height);
-    
+      
     for (const entity of this.entities) {
-      entity.update(this.entities, timestamp, this.canvasDimensions, this.settings);
-      entity.draw(this.ctx, this.settings);
+        entity.update(this.entities, timestamp, this.canvasDimensions, this.settings);
+        entity.draw(this.ctx, this.settings);
     }
     
     this.updateStats();

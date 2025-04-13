@@ -1,9 +1,7 @@
-// js/main.js
 
 import Simulation from "./simulation.js";
 
 const settings = {
-  // Input elements
   rockCount: document.getElementById("rockCount"),
   paperCount: document.getElementById("paperCount"),
   scissorsCount: document.getElementById("scissorsCount"),
@@ -14,14 +12,13 @@ const settings = {
   entitySize: document.getElementById("entitySize"),
   spawnMode: document.getElementById("spawnMode"),
   movementMode: document.getElementById("movementMode"),
+  debugMode: document.getElementById("debugMode"),
   
-  // Stats display
   rockStat: document.getElementById("rockStat"),
   paperStat: document.getElementById("paperStat"),
   scissorsStat: document.getElementById("scissorsStat"),
   statusStat: document.getElementById("statusStat"),
   
-  // Canvas and overlays
   canvas: document.getElementById("simulationCanvas"),
   winnerOverlay: document.getElementById("winnerOverlay"),
   winnerEmoji: document.getElementById("winnerEmoji"),
@@ -45,4 +42,8 @@ document.getElementById("pauseBtn").addEventListener("click", () => {
 });
 document.getElementById("resetBtn").addEventListener("click", () => {
   simulation.reset();
+});
+
+settings.debugMode.addEventListener("change", () => {
+  simulation.updateDebugMode();
 });
