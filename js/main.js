@@ -1,4 +1,3 @@
-
 import Simulation from "./simulation.js";
 
 const settings = {
@@ -32,16 +31,40 @@ window.addEventListener("load", () => {
 });
 
 document.getElementById("startBtn").addEventListener("click", () => {
-  if (simulation.entities.length === 0) {
-    simulation.initialize();
+  // Check if a winner was declared or settings were changed
+  if (simulation.winner !== null || simulation.needsReset) {
+    simulation.reset();
   }
+  
   simulation.start();
 });
+
 document.getElementById("pauseBtn").addEventListener("click", () => {
   simulation.pause();
 });
+
 document.getElementById("resetBtn").addEventListener("click", () => {
   simulation.reset();
+});
+
+// Monitor for changes in entity counts and spawn/movement settings
+const settingsToMonitor = [
+  "rockCount", "paperCount", "scissorsCount", 
+  "spawnMode", "movementMode"
+];
+
+settingsToMonitor.forEach(settingId => {
+  settings[settingId].addEventListener("change", () => {
+    // Mark simulation as needing reinitialization
+    simulation.needsReset = true;
+  });
+});
+
+// Monitor changes to numeric inputs with input event (captures typing)
+["rockCount", "paperCount", "scissorsCount"].forEach(settingId => {
+  settings[settingId].addEventListener("input", () => {
+    simulation.needsReset = true;
+  });
 });
 
 settings.debugMode.addEventListener("change", () => {

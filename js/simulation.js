@@ -12,6 +12,7 @@ export default class Simulation {
     this.animationFrameId = null;
     this.winner = null;
     this.lastTime = 0;
+    this.needsReset = false; // New flag to track when settings have changed
   }
 
   isOverlapping(x, y, newEntityRadius, entities, minDistance) {
@@ -161,6 +162,12 @@ export default class Simulation {
   }
 
   start() {
+    // Apply settings changes if needed before starting
+    if (this.needsReset) {
+      this.initialize();
+      this.needsReset = false;
+    }
+    
     if (!this.isRunning) {
       this.isRunning = true;
       this.lastTime = performance.now();
