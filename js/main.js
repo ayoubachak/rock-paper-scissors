@@ -8,6 +8,7 @@ const settings = {
   attractionFactor: document.getElementById("attractionFactor"),
   avoidanceFactor: document.getElementById("avoidanceFactor"),
   globalAwareness: document.getElementById("globalAwareness"),
+  tickTimer: document.getElementById("tickTimer"),
   entitySize: document.getElementById("entitySize"),
   spawnMode: document.getElementById("spawnMode"),
   movementMode: document.getElementById("movementMode"),
@@ -31,10 +32,8 @@ window.addEventListener("load", () => {
 });
 
 document.getElementById("startBtn").addEventListener("click", () => {
-  // Check if a winner was declared or settings were changed
   if (simulation.winner !== null || simulation.needsReset) {
     simulation.reset();
-    // Force a full initialization to properly clear the winner state
     simulation.initialize();
   }
   
@@ -49,7 +48,6 @@ document.getElementById("resetBtn").addEventListener("click", () => {
   simulation.reset();
 });
 
-// Monitor for changes in entity counts and spawn/movement settings
 const settingsToMonitor = [
   "rockCount", "paperCount", "scissorsCount", 
   "spawnMode", "movementMode"
@@ -62,7 +60,13 @@ settingsToMonitor.forEach(settingId => {
   });
 });
 
-// Monitor changes to numeric inputs with input event (captures typing)
+settings.tickTimer.addEventListener("input", () => {
+  if (simulation.isRunning) {
+    simulation.pause();
+    simulation.start();
+  }
+});
+
 ["rockCount", "paperCount", "scissorsCount"].forEach(settingId => {
   settings[settingId].addEventListener("input", () => {
     simulation.needsReset = true;

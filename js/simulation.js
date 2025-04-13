@@ -12,7 +12,8 @@ export default class Simulation {
     this.animationFrameId = null;
     this.winner = null;
     this.lastTime = 0;
-    this.needsReset = false; // New flag to track when settings have changed
+    this.needsReset = false;
+    this.tickInterval = null;
   }
 
   isOverlapping(x, y, newEntityRadius, entities, minDistance) {
@@ -28,7 +29,6 @@ export default class Simulation {
     this.entities = [];
     this.winner = null;
     
-    // Ensure the winner overlay is hidden
     this.settings.winnerOverlay.classList.remove("show");
     this.settings.winnerOverlay.style.opacity = "0";
     this.settings.winnerOverlay.classList.add("pointer-events-none");
@@ -118,7 +118,6 @@ export default class Simulation {
     this.updateStats();
     this.checkWinner();
     
-    this.animationFrameId = requestAnimationFrame((t) => this.animate(t));
   }
 
   updateStats() {
@@ -168,7 +167,6 @@ export default class Simulation {
   }
 
   start() {
-    // Apply settings changes if needed before starting
     if (this.needsReset) {
       this.initialize();
       this.needsReset = false;
@@ -177,7 +175,21 @@ export default class Simulation {
     if (!this.isRunning) {
       this.isRunning = true;
       this.lastTime = performance.now();
-      this.animate(this.lastTime);
+      
+      if (this.tickInterval) {
+        clearInterval(this.tickInterval);
+        this.tickInterval = null;
+      }
+      
+      const tickRate = parseInt(this.settings.tickTimer.value);
+      const tickDelay = 1000 / tickRate;
+      
+      this.tickInterval = setInterval(() => {
+        if (this.isRunning) {
+          const currentTime = performance.now();
+          this.animate(currentTime);
+        }
+      }, tickDelay);
     }
   }
 
@@ -186,6 +198,10 @@ export default class Simulation {
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = null;
+    }
+    if (this.tickInterval) {
+      clearInterval(this.tickInterval);
+      this.tickInterval = null;
     }
     this.updateStats();
   }

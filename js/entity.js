@@ -1,4 +1,3 @@
-// js/Entity.js
 
 export const TYPES = {
     ROCK: 0,
@@ -124,7 +123,7 @@ export const TYPES = {
           const dy = this.targetEntity.y - this.y;
           const distance = Math.hypot(dx, dy);
           if (distance > 0) {
-            const biasFactor = 0.05; // slight enemy attraction
+            const biasFactor = 0.05;
             forceX += (dx / distance) * biasFactor;
             forceY += (dy / distance) * biasFactor;
           }
