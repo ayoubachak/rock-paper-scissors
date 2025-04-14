@@ -32,20 +32,24 @@ window.addEventListener("load", () => {
 });
 
 document.getElementById("startBtn").addEventListener("click", () => {
+  // Check if a winner was declared or settings were changed
   if (simulation.winner !== null || simulation.needsReset) {
     simulation.reset();
     simulation.initialize();
   }
   
   simulation.start();
+  document.getElementById("startBtn").innerHTML = "Start";
 });
 
 document.getElementById("pauseBtn").addEventListener("click", () => {
   simulation.pause();
+  document.getElementById("startBtn").innerHTML = "Resume";
 });
 
 document.getElementById("resetBtn").addEventListener("click", () => {
   simulation.reset();
+  document.getElementById("startBtn").textContent = "Start";
 });
 
 const settingsToMonitor = [
@@ -55,7 +59,6 @@ const settingsToMonitor = [
 
 settingsToMonitor.forEach(settingId => {
   settings[settingId].addEventListener("change", () => {
-    // Mark simulation as needing reinitialization
     simulation.needsReset = true;
   });
 });
